@@ -7,25 +7,25 @@ System.Console.WriteLine($"Part 2: {Part2(lines)}");
 
 int Part1(string[] lines)
 {
-    List<int> index1 = new();
-    List<int> index2 = new();
+    List<int> numbers1 = [];
+    List<int> numbers2 = [];
 
     foreach (var line in lines)
     {
         var parts = line.Split("   ");
 
-        index1.Add(int.Parse(parts[0]));
-        index2.Add(int.Parse(parts[1]));
+        numbers1.Add(int.Parse(parts[0]));
+        numbers2.Add(int.Parse(parts[1]));
     }
 
-    index1.Sort();
-    index2.Sort();
+    numbers1.Sort();
+    numbers2.Sort();
 
     var sumDiff = 0;
 
-    for (int i = 0; i < index1.Count; i++)
+    for (int i = 0; i < numbers1.Count; i++)
     {
-        sumDiff += Math.Abs(index1[i] - index2[i]);
+        sumDiff += Math.Abs(numbers1[i] - numbers2[i]);
     }
 
     return sumDiff;
@@ -34,5 +34,35 @@ int Part1(string[] lines)
 
 int Part2(string[] lines)
 {
-    return 0;
+
+    List<int> numbers1 = [];
+    List<int> numbers2 = [];
+
+    foreach (var line in lines)
+    {
+        var parts = line.Split("   ");
+
+        numbers1.Add(int.Parse(parts[0]));
+        numbers2.Add(int.Parse(parts[1]));
+    }
+
+    var sumSimilarity = 0;
+
+    for (int i = 0; i < numbers1.Count; i++)
+    {
+        var index = numbers1[i];
+
+        var count = 0;
+        foreach (var index2 in numbers2)
+        {
+            if (index == index2)
+            {
+                count++;
+            }
+        }
+
+        sumSimilarity += index * count;
+    }
+
+    return sumSimilarity;
 }
