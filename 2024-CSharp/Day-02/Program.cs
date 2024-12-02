@@ -35,7 +35,9 @@ int Part2(string[] lines)
         if (CheckSequence(parts))
         {
             countSafe++;
-        } else {
+        }
+        else
+        {
             for (int i = 0; i < parts.Length; i++)
             {
                 var newParts = parts.Where((source, index) => index != i).ToArray();
