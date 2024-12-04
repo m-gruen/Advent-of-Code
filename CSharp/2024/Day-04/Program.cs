@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using Microsoft.VisualBasic;
 
-var lines = File.ReadAllLines("input-short.txt");
+var lines = File.ReadAllLines("input.txt");
 
 System.Console.WriteLine($"Part 1: {Part1(lines)}");
 System.Console.WriteLine($"Part 2: {Part2(lines)}");
@@ -47,10 +47,10 @@ int Part2(string[] lines)
 {
     var grid = makeGrid(lines);
     (int, int)[] directions = [
-        (-1, -1),
-        (-1, 1),
-        (1, -1),
-        (1, 1)
+        (-1, -1), // Top Left
+        (-1, 1), // Top Right
+        (1, -1), // Bottom Left
+        (1, 1) // Bottom Right
     ];
 
     int rows = grid.GetLength(0);
@@ -64,31 +64,30 @@ int Part2(string[] lines)
         {
             if (grid[r, c] == 'A')
             {
-                var mCount = 0;
-                var sCount = 0;
-                var sPosition = new List<(int, int)>();
-                var mPosition = new List<(int, int)>();
+                int mCount = 0, sCount = 0;
+                var mDirections = new HashSet<(int dr, int dc)>();
 
                 foreach (var (dr, dc) in directions)
                 {
-                    int rd = r, cd = c;
+                    int rd = r + dr, cd = c + dc;
 
-                    if (rd < 0 || rd >= rows || cd < 0 || cd >= cols) { break; }
-                    if (grid[rd, cd] == 'M')
+                    if (rd >= 0 && rd < rows && cd >= 0 && cd < cols)
                     {
-                        mCount++;
-                        mPosition.Add((rd, cd));
+                        if (grid[rd, cd] == 'M')
+                        {
+                            mCount++;
+                            mDirections.Add((dr, dc));
+                        }
+                        if (grid[rd, cd] == 'S')
+                        {
+                            sCount++;
+                        }
                     }
-                    if (grid[rd, cd] == 'S')
-                    {
-                        sCount++;
-                        sPosition.Add((rd, cd));
-                    }
-                    rd += dr;
-                    cd += dc;
                 }
 
-                if (mCount == 2 && sCount == 2)
+                if (mCount == 2 && sCount == 2 &&
+                !(mDirections.Contains((-1, -1)) && mDirections.Contains((1, 1)) ||
+                  mDirections.Contains((-1, 1)) && mDirections.Contains((1, -1))))
                 {
                     XmasCount++;
                 }
