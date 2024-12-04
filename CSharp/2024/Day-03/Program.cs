@@ -27,5 +27,35 @@ int Part1(string[] lines)
 
 int Part2(string[] lines)
 {
-    return 0;
+    var countMul = 0;
+    var mulEnabled = true;
+
+    foreach (var line in lines)
+    {
+        var parts = Regex.Split(line, @"(do\(\)|don't\(\))");
+
+        foreach (var part in parts)
+        {
+            if (part == "do()")
+            {
+                mulEnabled = true;
+            }
+            else if (part == "don't()")
+            {
+                mulEnabled = false;
+            }
+            else if (mulEnabled)
+            {
+                var matches = Regex.Matches(part, @"mul\(\d{1,3},\d{1,3}\)");
+
+                foreach (Match match in matches)
+                {
+                    var partsMul = match.Value[4..^1].Split(',').Select(int.Parse).ToArray();
+                    countMul += partsMul[0] * partsMul[1];
+                }
+            };
+        }
+    }
+
+    return countMul;
 }
