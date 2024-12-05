@@ -10,34 +10,48 @@ System.Console.WriteLine($"Part 2: {Part2(lines)}");
 
 int Part1(string[][] lines)
 {
-    var rules = lines[0].Select(l => l.Split('|').Select(int.Parse).ToArray()).ToArray();
-    var numberLines = lines[1]
-        .Select(l => l.Split(',')
-            .Select(int.Parse)
-            .ToArray())
-        .ToArray();
+    var rules = getRules(lines[0]);
+    var numberLines = getNumberLines(lines[1]);
 
-    var count = 0;
-    foreach (var numberLine in numberLines)
-    {
-        var valid = true;
-        foreach (var rule in rules)
-        {
-            if (numberLine.Contains(rule[0]) && numberLine.Contains(rule[1]) &&
-                Array.IndexOf(numberLine, rule[0]) > Array.IndexOf(numberLine, rule[1]))
-            {
-                valid = false;
-                break;
-            }
-        }
-
-        if (valid) { count += numberLine[numberLine.Length / 2]; }
-    }
-
-    return count;
+    return numberLines
+        .Where(numberLine => IsValid(numberLine, rules))
+        .Sum(numberLine => numberLine[numberLine.Length / 2]);
 }
 
 int Part2(string[][] lines)
 {
+    var rules = getRules(lines[0]);
+    var numberLines = getNumberLines(lines[1]);
+
+    
     return 0;
+}
+
+bool IsValid(int[] numberLine, int[][] rules)
+{
+    foreach (var rule in rules)
+    {
+        if (numberLine.Contains(rule[0]) && numberLine.Contains(rule[1]) &&
+            Array.IndexOf(numberLine, rule[0]) > Array.IndexOf(numberLine, rule[1]))
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+int[][] getRules(string[] lines)
+{
+    return [.. lines
+            .Select(l => l.Split('|')
+            .Select(int.Parse)
+            .ToArray())];
+}
+
+int[][] getNumberLines(string[] lines)
+{
+    return [.. lines
+            .Select(l => l.Split(',')
+            .Select(int.Parse)
+            .ToArray())];
 }
