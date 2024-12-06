@@ -1,6 +1,5 @@
 ﻿// Advent of Code 2024 Day 6
 
-
 var lines = File.ReadAllLines("input.txt");
 
 System.Console.WriteLine($"Part 1: {Part1(lines)}");
@@ -9,37 +8,19 @@ System.Console.WriteLine($"Part 2: {Part2(lines)}");
 int Part1(string[] lines)
 {
     var grid = makeGrid(lines);
-    var exited = false;
-    while (!exited)
-    {
-        for (int i = 0; i < grid.Length; i++)
-        {
-            for (int j = 0; j < grid[0].Length; j++)
-            {
-                if (grid[i][j] == '^')
-                {
-                    exited = MoveUp(grid, i, j);
-                }
-                else if (grid[i][j] == 'v')
-                {
-                    exited = MoveDown(grid, i, j);
-                }
-                else if (grid[i][j] == '<')
-                {
-                    exited = MoveLeft(grid, i, j);
-                }
-                else if (grid[i][j] == '>')
-                {
-                    exited = MoveRight(grid, i, j);
-                }
+    var visited = new HashSet<(int, int)>();
+    var pos = GetStartingPos(grid);
 
-                if (exited) { break; }
-            }
-            if (exited) { break; }
-        }
+    while (isInside(grid, pos.Item1, pos.Item2))
+    {
+        visited.Add(pos);
+        var nextPos = Direction.GetNextPos(pos.Item1, pos.Item2);
+        if (!isInside(grid, nextPos.Item1, nextPos.Item2)) { break; }
+        else if (grid[nextPos.Item1][nextPos.Item2] == '#') { Direction.ChangeDir(); }
+        else { pos = nextPos; }
     }
 
-    return grid.SelectMany(row => row).Count(c => c == 'X') + 1;
+    return visited.Count;
 }
 
 int Part2(string[] lines)
@@ -51,58 +32,51 @@ char[][] makeGrid(string[] lines) => lines.Select(line => line.ToCharArray()).To
 
 bool isInside(char[][] grid, int i, int j) => i >= 0 && i < grid.Length && j >= 0 && j < grid[0].Length;
 
-bool MoveUp(char[][] grid, int i, int j)
+(int, int) GetStartingPos(char[][] grid)
 {
-    if (!isInside(grid, i - 1, j) || grid[i - 1][j] == '#')
+    for (int i = 0; i < grid.Length; i++)
     {
-        grid[i][j] = '>';
+        for (int j = 0; j < grid[0].Length; j++)
+        {
+            if (grid[i][j] == '^') { return (i, j); }
+        }
     }
-    else
-    {
-        grid[i - 1][j] = '^';
-        grid[i][j] = 'X';
-    }
-    return !isInside(grid, i - 1, j);
+
+    return (0, 0);
 }
 
-bool MoveDown(char[][] grid, int i, int j)
+class Direction
 {
-    if (!isInside(grid, i + 1, j) || grid[i + 1][j] == '#')
+    private static Dir currentDir = Dir.Up;
+    public static (int, int) GetNextPos(int i, int j)
     {
-        grid[i][j] = '<';
+        return currentDir switch
+        {
+            Dir.Up => (i - 1, j),
+            Dir.Down => (i + 1, j),
+            Dir.Left => (i, j - 1),
+            Dir.Right => (i, j + 1),
+            _ => (0, 0),
+        };
     }
-    else
-    {
-        grid[i + 1][j] = 'v';
-        grid[i][j] = 'X';
-    }
-    return !isInside(grid, i + 1, j);
-}
 
-bool MoveLeft(char[][] grid, int i, int j)
-{
-    if (!isInside(grid, i, j - 1) || grid[i][j - 1] == '#')
+    public static void ChangeDir()
     {
-        grid[i][j] = '^';
+        currentDir = currentDir switch
+        {
+            Dir.Up => Dir.Right,
+            Dir.Right => Dir.Down,
+            Dir.Down => Dir.Left,
+            Dir.Left => Dir.Up,
+            _ => Dir.Up,
+        };
     }
-    else
-    {
-        grid[i][j - 1] = '<';
-        grid[i][j] = 'X';
-    }
-    return !isInside(grid, i, j - 1);
-}
 
-bool MoveRight(char[][] grid, int i, int j)
-{
-    if (!isInside(grid, i, j + 1) || grid[i][j + 1] == '#')
+    private enum Dir
     {
-        grid[i][j] = 'v';
+        Up,
+        Down,
+        Left,
+        Right
     }
-    else
-    {
-        grid[i][j + 1] = '>';
-        grid[i][j] = 'X';
-    }
-    return !isInside(grid, i, j + 1);
 }
