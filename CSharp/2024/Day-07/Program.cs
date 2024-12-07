@@ -44,20 +44,51 @@ long Part1(string[] lines)
     return sum;
 }
 
-int Part2(string[] lines)
+long Part2(string[] lines)
 {
-    return 0;
+    long sum = 0;
+    foreach (var line in lines)
+    {
+        var parts = line.Split(":");
+        var expectedResult = long.Parse(parts[0]);
+        var numbers = parts[1].Trim().Split(" ");
+
+        char[] operators = ['+', '*', '|'];
+        int combinations = (int)Math.Pow(3, numbers.Length - 1);
+
+        for (int i = 0; i < combinations; i++)
+        {
+            var expression = numbers[0];
+            int temp = i;
+
+            for (int j = 0; j < numbers.Length - 1; j++)
+            {
+                expression += operators[temp % 3];
+                expression += numbers[j + 1];
+                temp /= 3; // Ternary shift
+            }
+
+            if (Calculate(expression) == expectedResult)
+            {
+                sum += expectedResult;
+                break;
+            }
+        }
+
+    }
+
+    return sum;
 }
 
 long Calculate(string expression)
 {
     long result = 0;
-    var numbers = expression.Split(['+', '*']);
+    var numbers = expression.Split(['+', '*', '|']);
     List<char> operators = [];
 
     foreach (char c in expression)
     {
-        if (c == '+' || c == '*') { operators.Add(c); }
+        if (c == '+' || c == '*' || c == '|') { operators.Add(c); }
     }
 
     result = long.Parse(numbers[0]);
@@ -68,6 +99,7 @@ long Calculate(string expression)
 
         if (operators[i] == '+') { result += nextNumber; }
         else if (operators[i] == '*') { result *= nextNumber; }
+        else if (operators[i] == '|') { result = long.Parse($"{result}{nextNumber}"); }
     }
 
     return result;
