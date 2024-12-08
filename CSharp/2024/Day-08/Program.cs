@@ -52,9 +52,53 @@ long Part1(string[] lines)
     return visited.Count;
 }
 
-long Part2(string[] lines)
+int Part2(string[] lines)
 {
-    return 0;
+    var grid = MakeGrid(lines);
+
+    var visited = new HashSet<Point>();
+
+    for (int i = 0; i < grid.Length; i++)
+    {
+        for (int j = 0; j < grid[i].Length; j++)
+        {
+            if (grid[i][j] != '.')
+            {
+                for (int k = 0; k < grid.Length; k++)
+                {
+                    for (int l = 0; l < grid[k].Length; l++)
+                    {
+                        if (grid[k][l] == grid[i][j] && (i != k || j != l))
+                        {
+                            var point1 = new Point(i, j);
+                            var point2 = new Point(k, l);
+                            visited.Add(point1);
+                            visited.Add(point2);
+
+                            var distanceX = DistanceX(point1, point2);
+                            var distanceY = DistanceY(point1, point2);
+
+                            var pointA = new Point(point1.X + distanceX, point1.Y + distanceY);
+                            while (IsInGrid(grid, pointA))
+                            {
+                                visited.Add(pointA);
+                                pointA = new Point(pointA.X + distanceX, pointA.Y + distanceY);
+                            }
+
+                            var pointB = new Point(point2.X - distanceX, point2.Y - distanceY);
+                            while (IsInGrid(grid, pointB) && grid[pointB.X][pointB.Y] == '.')
+                            {
+                                visited.Add(pointB);
+                                pointB = new Point(pointB.X - distanceX, pointB.Y - distanceY);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return visited.Count;
 }
 
 char[][] MakeGrid(string[] lines) => [.. lines.Select(line => line.ToCharArray())];
