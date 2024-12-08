@@ -7,7 +7,7 @@ var lines = File.ReadAllLines("input.txt");
 System.Console.WriteLine($"Part 1: {Part1(lines)}");
 System.Console.WriteLine($"Part 2: {Part2(lines)}");
 
-long Part1(string[] lines)
+int Part1(string[] lines)
 {
     var grid = MakeGrid(lines);
 
