@@ -1,7 +1,5 @@
 ﻿// Advent of Code 2024 Day 7
 
-using System.Drawing;
-
 var lines = File.ReadAllLines("input.txt");
 
 System.Console.WriteLine($"Part 1: {Part1(lines)}");
