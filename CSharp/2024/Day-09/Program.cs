@@ -24,9 +24,75 @@ long Part1(string input)
     return CalculateSum([.. blocks]);
 }
 
-int Part2(string input)
+long Part2(string input)
 {
-    return 0;
+    var blocks = ProcessInstructions(input);
+    var holes = new List<int>();
+
+    for (int index = 0; index < blocks.Count; index++)
+    {
+        if (blocks[index] == -1) { holes.Add(index); }
+    }
+
+    for (int i = blocks.Count - 1; i >= 0; i--)
+    {
+        if (blocks[i] != -1)
+        {
+            var file = new List<int>();
+            for (int j = i; j >= 0 && blocks[j] == blocks[i]; j--)
+            {
+                file.Add(blocks[j]);
+            }
+
+            int? holeStartIndex = null;
+            for (int h = 0; h <= holes.Count; h++)
+            {
+                bool isContiguous = true;
+                for (int k = 0; k < file.Count; k++)
+                {
+                    if (holes[h + k] != holes[h] + k)
+                    {
+                        isContiguous = false;
+                        break;
+                    }
+                }
+                
+                if (isContiguous)
+                {
+                    holeStartIndex = holes[h];
+                    break;
+                }
+            }
+
+            if (holeStartIndex.HasValue && holeStartIndex.Value < i)
+            {
+                for (int k = 0; k < file.Count; k++)
+                {
+                    blocks[holeStartIndex.Value + k] = file[k];
+                    holes.Remove(holeStartIndex.Value + k);
+                }
+                for (int k = 0; k < file.Count; k++)
+                {
+                    blocks[i - k] = -1;
+                    holes.Add(i - k);
+                }
+            }
+            else
+            {
+                i -= file.Count - 1;
+            }
+        }
+    }
+
+    for (int i = 0; i < blocks.Count; i++)
+    {
+        if (blocks[i] == -1)
+        {
+            blocks[i] = 0;
+        }
+    }
+
+    return CalculateSum([.. blocks]);
 }
 
 int[] MakeIntArray(string input) => [.. input.Select(c => int.Parse(c.ToString()))];
@@ -37,7 +103,7 @@ List<int> ProcessInstructions(string input)
 {
     var instructions = MakeIntArray(input);
     var index = 0;
-    List<int> blocks = new List<int>();
+    List<int> blocks = [];
 
     for (int i = 0; i < instructions.Length; i++)
     {
