@@ -1,6 +1,4 @@
-﻿// Advent of Code 2024: Day 1
-
-using System.Linq.Expressions;
+﻿// Advent of Code 2024: Day 2
 
 var lines = File.ReadAllLines("input.txt");
 
