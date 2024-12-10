@@ -8,35 +8,30 @@ System.Console.WriteLine($"Part 2: {Part2(lines)}");
 int Part1(string[] lines)
 {
     var grid = MakeGrid(lines);
-
+    var startingPoints = GetAllStartingPoints(grid);
     var count = 0;
-    for (int i = 0; i < grid.Length; i++)
+
+    foreach (var (x, y) in startingPoints)
     {
-        for (int j = 0; j < grid[i].Length; j++)
+        HashSet<(int, int)> visited = [];
+        Queue<(int, int)> queue = [];
+        queue.Enqueue((x, y));
+
+        while (queue.Count > 0)
         {
-            if (grid[i][j] == 0)
+            var (i, j) = queue.Dequeue();
+
+            if (!visited.Contains((i, j)))
             {
-                HashSet<(int, int)> visited = [];
-                Queue<(int, int)> queue = [];
-                queue.Enqueue((i, j));
+                visited.Add((i, j));
 
-                while (queue.Count > 0)
+                if (grid[i][j] == 9)
                 {
-                    var (x, y) = queue.Dequeue();
-
-                    if (!visited.Contains((x, y)))
-                    {
-                        visited.Add((x, y));
-
-                        if (grid[x][y] == 9)
-                        {
-                            count++;
-                        }
-                        else
-                        {
-                            CheckDirections(grid, queue, x, y);
-                        }
-                    }
+                    count++;
+                }
+                else
+                {
+                    CheckDirections(grid, queue, i, j);
                 }
             }
         }
@@ -67,6 +62,22 @@ int Part2(string[] lines)
 }
 
 int[][] MakeGrid(string[] lines) => [.. lines.Select(line => line.Select(c => c - '0').ToArray())];
+
+List<(int, int)> GetAllStartingPoints(int[][] grid)
+{
+    List<(int, int)> startingPoints = [];
+    for (int i = 0; i < grid.Length; i++)
+    {
+        for (int j = 0; j < grid[i].Length; j++)
+        {
+            if (grid[i][j] == 0)
+            {
+                startingPoints.Add((i, j));
+            }
+        }
+    }
+    return startingPoints;
+}
 
 void CheckDirections(int[][] grid, Queue<(int, int)> queue, int x, int y)
 {
