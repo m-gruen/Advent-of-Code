@@ -43,19 +43,12 @@ int Part1(string[] lines)
 int Part2(string[] lines)
 {
     var grid = MakeGrid(lines);
+    var startingPoints = GetAllStartingPoints(grid);
     var count = 0;
 
-    for (int i = 0; i < grid.Length; i++)
+    foreach (var (x, y) in startingPoints)
     {
-        for (int j = 0; j < grid[i].Length; j++)
-        {
-            if (grid[i][j] == 0)
-            {
-                int nineCount = 0;
-                FindPaths(grid, i, j, ref nineCount);
-                count += nineCount;
-            }
-        }
+        FindPaths(grid, x, y, ref count);
     }
 
     return count;
