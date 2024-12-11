@@ -1,7 +1,5 @@
 ﻿// Advent of Code 2024 Day 11
 
-using System.Globalization;
-
 var input = File.ReadAllText("input.txt");
 
 System.Console.WriteLine($"Part 1: {Part1(input)}");
@@ -9,59 +7,57 @@ System.Console.WriteLine($"Part 2: {Part2(input)}");
 
 long Part1(string input)
 {
-    var stones = MakeTupleArray(input);
+    var stones = MakeStoneArray(input);
 
     for (int i = 0; i < 25; i++)
     {
-        stones = ConvertTupleArray(stones);
+        stones = ConvertStoneArray(stones);
     }
 
-    return stones.Sum(stone => stone.count);
+    return stones.Sum(stone => stone.Count);
 }
 
 long Part2(string input)
 {
-    var stones = MakeTupleArray(input);
+    var stones = MakeStoneArray(input);
 
     for (int i = 0; i < 75; i++)
     {
-        stones = ConvertTupleArray(stones);
+        stones = ConvertStoneArray(stones);
     }
 
-    return stones.Sum(stone => stone.count);
+    return stones.Sum(stone => stone.Count);
 }
 
-(long number, long count)[] ConvertTupleArray((long number, long count)[] stones)
+Stone[] ConvertStoneArray(Stone[] stones)
 {
+    List<Stone> newStones = [];
 
-    List<(long, long)> newStones = [];
-
-    foreach (var (number, count) in stones)
+    foreach (var stone in stones)
     {
-        if (number == 0) { newStones.Add((1, count)); }
+        if (stone.Number == 0) { newStones.Add(new(1, stone.Count)); }
         else
         {
-            int numDigits = (int)Math.Floor(Math.Log10(number) + 1);
+            int numDigits = (int)Math.Floor(Math.Log10(stone.Number) + 1);
             if (numDigits % 2 == 0)
             {
                 int halfDigits = numDigits / 2;
                 long divisor = (long)Math.Pow(10, halfDigits);
-                newStones.Add((number / divisor, count));
-                newStones.Add((number % divisor, count));
+                newStones.Add(new(stone.Number / divisor, stone.Count));
+                newStones.Add(new(stone.Number % divisor, stone.Count));
             }
-            else { newStones.Add((number * 2024, count)); }
+            else { newStones.Add(new(stone.Number * 2024, stone.Count)); }
         }
     }
-
 
     for (int i = 0; i < newStones.Count - 1; i++)
     {
         int j = i + 1;
         while (j < newStones.Count)
         {
-            if (newStones[i].Item1 == newStones[j].Item1)
+            if (newStones[i].Number == newStones[j].Number)
             {
-                newStones[i] = (newStones[i].Item1, newStones[i].Item2 + newStones[j].Item2);
+                newStones[i] = new(newStones[i].Number, newStones[i].Count + newStones[j].Count);
                 newStones.RemoveAt(j);
             }
             else { j++; }
@@ -71,7 +67,6 @@ long Part2(string input)
     return [.. newStones];
 }
 
-(long number, long count)[] MakeTupleArray(string input)
-{
-    return [.. input.Split(' ').Select(long.Parse).Select(number => (number, 1L))];
-}
+Stone[] MakeStoneArray(string input) => [.. input.Split(' ').Select(long.Parse).Select(number => new Stone(number, 1L))];
+
+record Stone(long Number, long Count);
