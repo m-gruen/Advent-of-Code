@@ -7,16 +7,16 @@ var input = File.ReadAllText("input.txt");
 System.Console.WriteLine($"Part 1: {Part1(input)}");
 System.Console.WriteLine($"Part 2: {Part2(input)}");
 
-int Part1(string input)
+long Part1(string input)
 {
-    var stones = MakeArray(input);
+    var stones = MakeTupleArray(input);
 
     for (int i = 0; i < 25; i++)
     {
-        stones = ConvertArray(stones);
+        stones = ConvertTupleArray(stones);
     }
 
-    return stones.Length;
+    return stones.Sum(stone => stone.count);
 }
 
 long Part2(string input)
@@ -29,37 +29,6 @@ long Part2(string input)
     }
 
     return stones.Sum(stone => stone.count);
-}
-
-long[] MakeArray(string input) => [.. input.Split(' ').Select(long.Parse)];
-
-long[] ConvertArray(long[] stones)
-{
-    List<long> newStones = [];
-
-    foreach (var stone in stones)
-    {
-        if (stone == 0)
-        {
-            newStones.Add(1);
-        }
-        else
-        {
-            var stoneStr = stone.ToString();
-            if (stoneStr.Length % 2 == 0)
-            {
-                var half = stoneStr.Length / 2;
-                newStones.Add(long.Parse(stoneStr[..half]));
-                newStones.Add(long.Parse(stoneStr[half..]));
-            }
-            else
-            {
-                newStones.Add(stone * 2024);
-            }
-        }
-    }
-
-    return [.. newStones];
 }
 
 (long number, long count)[] ConvertTupleArray((long number, long count)[] stones)
